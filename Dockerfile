@@ -48,7 +48,7 @@ RUN mkdir /opt/litecoin && cd /opt/litecoin \
 FROM debian:buster-slim as builder
 
 ENV LIGHTNINGD_VERSION=master
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates autoconf automake build-essential git libtool python3 python3-mako wget gnupg dirmngr git gettext libev-dev libcurl4-gnutls-dev libsqlite3-dev automake autoconf-archive libtool git
+RUN apt-get update && apt-get install -y --no-install-recommends libsqlite3-dev libcurl4-gnutls-dev ca-certificates autoconf automake build-essential git libtool python3 python3-mako wget gnupg dirmngr git gettext libev-dev libcurl4-gnutls-dev libsqlite3-dev automake autoconf-archive libtool git pkg-config
 
 RUN git clone https://github.com/ZmnSCPxj/clboss.git && \
     cd clboss && \
