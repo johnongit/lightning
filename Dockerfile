@@ -48,7 +48,13 @@ RUN mkdir /opt/litecoin && cd /opt/litecoin \
 FROM debian:buster-slim as builder
 
 ENV LIGHTNINGD_VERSION=master
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates autoconf automake build-essential git libtool python3 python3-mako wget gnupg dirmngr git gettext
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates autoconf automake build-essential git libtool python3 python3-mako wget gnupg dirmngr git gettext libev-dev libcurl4-gnutls-dev libsqlite3-dev automake autoconf-archive libtool git
+
+RUN clone git clone https://github.com/ZmnSCPxj/clboss.git && \
+    cd clboss && \
+    autoreconf -i && \
+    ./configure && make && \
+    make install
 
 RUN wget -q https://zlib.net/zlib-1.2.11.tar.gz \
 && tar xvf zlib-1.2.11.tar.gz \
@@ -84,8 +90,27 @@ RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j3 DEVE
 FROM debian:buster-slim as final
 
 COPY --from=downloader /opt/tini /usr/bin/tini
-RUN apt-get update && apt-get install -y --no-install-recommends socat inotify-tools python3 python3-pip \
+RUN apt-get update && apt-get install -y --no-install-recommends socat inotify-tools python3 python3-pip dns utils\
     && rm -rf /var/lib/apt/lists/*
+
+## Install cln-rest for RTL
+RUN mkdir -p /python-plugin/plugins \
+    && cd /python-plugin/plugins && \
+    git clone https://github.com/Ride-The-Lightning/c-lightning-REST.git && \
+    cd c-lightning-REST && \
+    npm install --only=production
+
+## Install backup plugin
+RUN git clone https://github.com/lightningd/plugins.git && \
+    pip3 install -U pip setuptools  && \
+    cd /plugins/backup && \
+    pip3 install --user -r requirements.txt
+
+## Install sparko
+RUN curl https://github.com/fiatjaf/sparko/releases/download/v2.8/https://github.com/fiatjaf/sparko/releases/download/v2.8/sparko_linux_amd64 --output /root/sparko_linux_amd64 && \
+    chmod +x /root/sparko_linux_amd64
+
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 ENV LIGHTNINGD_DATA=/root/.lightning
 ENV LIGHTNINGD_RPC_PORT=9835
@@ -100,5 +125,5 @@ COPY --from=downloader /opt/bitcoin/bin /usr/bin
 COPY --from=downloader /opt/litecoin/bin /usr/bin
 COPY tools/docker-entrypoint.sh entrypoint.sh
 
-EXPOSE 9735 9835
+EXPOSE 9735 9835 9737
 ENTRYPOINT  [ "/usr/bin/tini", "-g", "--", "./entrypoint.sh" ]
