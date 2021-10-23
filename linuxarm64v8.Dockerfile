@@ -137,7 +137,7 @@ VOLUME [ "/root/.lightning" ]
 COPY --from=builder /tmp/lightning_install/ /usr/local/
 COPY --from=downloader /opt/bitcoin/bin /usr/bin
 COPY --from=downloader /opt/litecoin/bin /usr/bin
-#COPY --from=builder /usr/local/bin/clboss /usr/local/bin
+COPY --from=builder /usr/local/bin /usr/local/bin
 COPY tools/docker-entrypoint.sh entrypoint.sh
 
 EXPOSE 9735 9835 9737
