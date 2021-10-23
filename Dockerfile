@@ -91,7 +91,7 @@ RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j3 DEVE
 FROM debian:buster-slim as final
 
 COPY --from=downloader /opt/tini /usr/bin/tini
-RUN apt-get update && apt-get install -y --no-install-recommends socat inotify-tools python3 python3-pip dns utils\
+RUN apt-get update && apt-get install -y --no-install-recommends socat inotify-tools python3 python3-pip dnsutils\
     && rm -rf /var/lib/apt/lists/*
 
 ## Install cln-rest for RTL
