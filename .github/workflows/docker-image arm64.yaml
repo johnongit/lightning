@@ -2,8 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ John-arm64-build ]
-
+    branches: [ john-arm64-build ]
+  pull_request:
+    branches: [ john-arm64-build ]
 
 jobs:
 
