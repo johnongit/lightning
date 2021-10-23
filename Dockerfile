@@ -92,7 +92,9 @@ FROM debian:buster-slim as final
 
 COPY --from=downloader /opt/tini /usr/bin/tini
 RUN apt-get update && apt-get install -y --no-install-recommends git socat inotify-tools python3 python3-pip dnsutils\
-    && rm -rf /var/lib/apt/lists/*
+    && curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
+    apt-get -y install nodejs &&\
+    rm -rf /var/lib/apt/lists/*
 
 ## Install cln-rest for RTL
 RUN mkdir -p /python-plugin/plugins \
