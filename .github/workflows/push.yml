@@ -2,9 +2,9 @@ name: Push to docker hub
 
 on:
   push:
-    branches: [ master ]
+    branches: [ john ]
   pull_request:
-    branches: [ master ]
+    branches: [ john ]
 
 jobs:
   push_to_registry:
