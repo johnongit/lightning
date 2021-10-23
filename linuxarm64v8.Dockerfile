@@ -106,7 +106,7 @@ COPY --from=downloader /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 COPY --from=downloader /opt/tini /usr/bin/tini
 RUN apt-get update && apt-get install -y --no-install-recommends socat inotify-tools python3 python3-pip curl git cargo dnsutils build-essential pkg-config libev-dev libcurl4-gnutls-dev libsqlite3-dev python3-dev dnsutils \
     && curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
-    apt-get -y install nodejs * \
+    apt-get -y install nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 ## Install cln-rest for RTL
