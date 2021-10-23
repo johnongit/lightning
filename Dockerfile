@@ -91,8 +91,30 @@ RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j3 DEVE
 FROM debian:buster-slim as final
 
 COPY --from=downloader /opt/tini /usr/bin/tini
-RUN apt-get update && apt-get install -y --no-install-recommends socat inotify-tools python3 python3-pip dns utils\
-    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends git socat inotify-tools python3 python3-pip dnsutils curl \
+    && curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
+    apt-get -y install nodejs &&\
+    rm -rf /var/lib/apt/lists/*
+
+## Install cln-rest for RTL
+RUN mkdir -p /python-plugin/plugins \
+    && cd /python-plugin/plugins && \
+    git clone https://github.com/Ride-The-Lightning/c-lightning-REST.git && \
+    cd c-lightning-REST && \
+    npm install --only=production
+
+## Install backup plugin
+RUN git clone https://github.com/lightningd/plugins.git && \
+    pip3 install -U pip setuptools  && \
+    cd /plugins/backup && \
+    pip3 install --user -r requirements.txt
+
+## Install sparko
+RUN curl https://github.com/fiatjaf/sparko/releases/download/v2.8/https://github.com/fiatjaf/sparko/releases/download/v2.8/sparko_linux_amd64 --output /root/sparko_linux_amd64 && \
+    chmod +x /root/sparko_linux_amd64
+
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 ## Install cln-rest for RTL
 RUN mkdir -p /python-plugin/plugins \
