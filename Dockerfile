@@ -48,7 +48,7 @@ RUN mkdir /opt/litecoin && cd /opt/litecoin \
 FROM debian:buster-slim as builder
 
 ENV LIGHTNINGD_VERSION=master
-RUN apt-get update && apt-get install -y --no-install-recommends libsqlite3-dev libcurl4-gnutls-dev ca-certificates autoconf automake build-essential git libtool python3 python3-mako wget gnupg dirmngr git gettext libev-dev libcurl4-gnutls-dev libsqlite3-dev automake autoconf-archive libtool git pkg-config
+RUN apt-get update && apt-get install -y --no-install-recommends libsodium-dev zlib1g-dev libgmp-dev valgrind python3-pip libpq-dev libsqlite3-dev libcurl4-gnutls-dev ca-certificates autoconf automake build-essential git libtool python3 python3-mako wget gnupg dirmngr git gettext libev-dev libcurl4-gnutls-dev libsqlite3-dev automake autoconf-archive libtool git pkg-config
 
 RUN git clone https://github.com/ZmnSCPxj/clboss.git && \
     cd clboss && \
@@ -91,7 +91,8 @@ RUN ./configure --prefix=/tmp/lightning_install --enable-static && make -j3 DEVE
 FROM debian:buster-slim as final
 
 COPY --from=downloader /opt/tini /usr/bin/tini
-RUN apt-get update && apt-get install -y --no-install-recommends git socat inotify-tools python3 python3-pip dnsutils curl \
+
+RUN apt-get update && apt-get install -y --no-install-recommends libsodium-dev libpq-dev git socat inotify-tools python3 python3-pip dnsutils curl \
     && curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
     apt-get -y install nodejs &&\
     rm -rf /var/lib/apt/lists/*
